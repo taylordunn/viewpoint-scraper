@@ -3,14 +3,13 @@ import os
 import bs4
 import requests
 import re
+import json
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import (
-    NoSuchElementException,
-    ElementNotInteractableException,
     TimeoutException
 )
 
@@ -69,6 +68,14 @@ def to_snake_case(text: str) -> str:
     # Convert to lowercase and strip trailing underscores
     return text.strip("_").lower()
 
+def clean_json(json_str):
+    # remove escape characters
+    json_str = json_str.replace("\n", "").replace("\t", "")
+    # remove trailing commas
+    json_str = re.sub(r',(\s*[\]}])', r'\1', json_str)
+    # replace empty values like "value": ,
+    json_str = re.sub(r'"value":\s*,', '"value": null,', json_str)
+    return json_str
 
 def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
     logging.info(f"{property_url=}")
@@ -76,24 +83,14 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
 
     wait = WebDriverWait(driver, 100)
 
-    # address
-    address = wait.until(
-        EC.visibility_of_element_located((By.CSS_SELECTOR, ".cutsheet-address"))
-    ).text
-
-    # property description
-    description_section = wait.until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, 'div[data-section-id="3"]'))
-    )
+    # JSON data
+    json_raw = driver.find_element(By.XPATH, '//script[@type="application/ld+json"]').get_attribute("innerHTML")
     try:
-        # expand the full description
-        description_section.find_element(By.CLASS_NAME, "truncated-more").click()
-    except (NoSuchElementException, ElementNotInteractableException):
-        pass
-    description = description_section.find_element(
-        By.CLASS_NAME, "full-description"
-    ).text
-
+        json_data = json.loads(clean_json(json_raw))
+    except:
+        print(json_raw)
+        print(clean_json(json_raw))
+    
     # get listing history
     listing_section = wait.until(
         EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[data-section-id="6"]'))
@@ -153,10 +150,17 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
             property_details[to_snake_case(key.strip())] = value.strip()
 
     return {
-        "address": address,
+        "name": json_data.get("name", None),
+        "url": json_data.get("url", None),
         "listing_id": re.search(r"/cutsheet/(\d+)/", property_url).group(1),
-        "url": BASE_URL + property_url,
-        "description": description,
+        "description": json_data.get("description", None),
+        "date_posted": json_data.get("datePosted", None),
+        "price": json_data.get("priceSpecification", {}).get("price", None),
+        "street_address": json_data.get("address", {}).get("streetAddress"),
+        "adress_locality": json_data.get("address", {}).get("addressLocality"),
+        "postal_code": json_data.get("address", {}).get("postalCode"),
+        "rooms": json_data.get("numberOfRooms", None),
+        "bathrooms": json_data.get("numberOfBathroomsTotal", None),
         "listing_history": listing_history,
         **property_details,
     }
