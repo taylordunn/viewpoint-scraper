@@ -73,7 +73,12 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
     logging.info(f"{property_url=}")
     driver.get(BASE_URL + property_url)
 
-    wait = WebDriverWait(driver, 60)
+    wait = WebDriverWait(driver, 100)
+
+    # address
+    address = wait.until(
+        EC.presence_of_element_located((By.CLASS_NAME, "cutsheet-address"))
+    ).text
 
     # property description
     description_section = wait.until(
@@ -90,7 +95,6 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
 
     # get listing history
     listing_section = wait.until(
-        #EC.presence_of_element_located((By.CSS_SELECTOR, 'div[data-section-id="6"]'))
         EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[data-section-id="6"]'))
     )
     listing_section.click()
@@ -144,6 +148,7 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
             property_details[to_snake_case(key.strip())] = value.strip()
 
     return {
+        "address": address,
         "listing_id": re.search(r"/cutsheet/(\d+)/", property_url).group(1),
         "url": BASE_URL + property_url,
         "description": description,
