@@ -78,7 +78,7 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
 
     # address
     address = wait.until(
-        EC.presence_of_element_located((By.CLASS_NAME, "cutsheet-address"))
+        EC.visibility_of_element_located((By.CSS_SELECTOR, ".cutsheet-address"))
     ).text
 
     # property description
@@ -101,8 +101,8 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
     listing_section.click()
     listing_history = []
     try:
-        wait.until(EC.presence_of_element_located((By.CLASS_NAME, "table-history-item")))
-        listing_items = listing_section.find_elements(By.CLASS_NAME, "table-history-item")
+        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".table-history-item")))
+        listing_items = listing_section.find_elements(By.CSS_SELECTOR, ".table-history-item")
         for i, listing_item in enumerate(listing_items):
             listing_header = listing_item.find_element(
                 By.CLASS_NAME, "table-history-item-header"
