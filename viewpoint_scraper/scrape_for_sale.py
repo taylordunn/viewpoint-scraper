@@ -4,7 +4,7 @@ import csv
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-from scrape_viewpoint import login_to_viewpoint, get_streets, get_properties, get_property_info
+from viewpoint_scraper import login_to_viewpoint, get_streets, get_properties, get_property_info
 
 SUBDISTRICTS = {
     "Subdistrict A (Bedford)": 74,
@@ -51,7 +51,7 @@ if __name__ == "__main__":
         out_file = f"data/for_sale/properties_{datetime.now().strftime("%Y-%m-%d")}.csv"
         with open(out_file, mode="w", newline="") as file:
             logging.info(f"Writing data to file: {out_file}")
-            fieldnames = list({field for p in properties_list for field in p})
+            fieldnames = list(dict.fromkeys(field for p in properties_list for field in p))
             writer = csv.DictWriter(file, fieldnames=fieldnames)
 
             writer.writeheader()

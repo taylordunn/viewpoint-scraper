@@ -11,6 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import (
     NoSuchElementException,
     ElementNotInteractableException,
+    TimeoutException
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -98,40 +99,44 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
         EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[data-section-id="6"]'))
     )
     listing_section.click()
-    wait.until(EC.presence_of_element_located((By.CLASS_NAME, "table-history-item")))
-    listing_items = listing_section.find_elements(By.CLASS_NAME, "table-history-item")
     listing_history = []
-    for i, listing_item in enumerate(listing_items):
-        listing_header = listing_item.find_element(
-            By.CLASS_NAME, "table-history-item-header"
-        )
-        if i == 0:
-            header_labels = [
-                to_snake_case(item.text)
-                for item in listing_header.find_elements(By.TAG_NAME, "span")
-            ]
+    try:
+        wait.until(EC.presence_of_element_located((By.CLASS_NAME, "table-history-item")))
+        listing_items = listing_section.find_elements(By.CLASS_NAME, "table-history-item")
+        for i, listing_item in enumerate(listing_items):
+            listing_header = listing_item.find_element(
+                By.CLASS_NAME, "table-history-item-header"
+            )
+            if i == 0:
+                header_labels = [
+                    to_snake_case(item.text)
+                    for item in listing_header.find_elements(By.TAG_NAME, "span")
+                ]
 
-            assert header_labels == [
-                "status",
-                "start_date",
-                "end_date",
-                "list_price",
-                "sold_price",
-                "duration",
-            ]
-        else:
-            header_values = [
-                item.text for item in listing_header.find_elements(By.TAG_NAME, "span")
-            ]
-            listing_dict = dict(zip(header_labels, header_values))
-            listing_dict["changes"] = [
-                l.text
-                for l in listing_item.find_elements(
-                    By.CLASS_NAME, "history-item-change"
-                )
-            ]
+                assert header_labels == [
+                    "status",
+                    "start_date",
+                    "end_date",
+                    "list_price",
+                    "sold_price",
+                    "duration",
+                ]
+            else:
+                header_values = [
+                    item.text for item in listing_header.find_elements(By.TAG_NAME, "span")
+                ]
+                listing_dict = dict(zip(header_labels, header_values))
+                listing_dict["changes"] = [
+                    l.text
+                    for l in listing_item.find_elements(
+                        By.CLASS_NAME, "history-item-change"
+                    )
+                ]
 
-            listing_history.append(listing_dict)
+                listing_history.append(listing_dict)
+    except TimeoutException as e:
+        logging.error("Timeout: failed to recover listing history. %s", str(e))
+
 
     # get details
     details_section = wait.until(
