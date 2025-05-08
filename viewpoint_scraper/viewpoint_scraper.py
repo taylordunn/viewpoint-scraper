@@ -90,11 +90,7 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
         )
     )
     json_raw = json_element.get_attribute("innerHTML")
-    try:
-        json_data = json.loads(clean_json(json_raw))
-    except:
-        print(json_raw)
-        print(clean_json(json_raw))
+    json_data = json.loads(clean_json(json_raw))
 
     # get listing history
     listing_section = wait.until(
