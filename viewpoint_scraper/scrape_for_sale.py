@@ -1,6 +1,7 @@
 from datetime import datetime
 import logging
 import csv
+import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -24,6 +25,7 @@ if __name__ == "__main__":
     chrome_options.add_argument("--disable-gpu")
     driver = webdriver.Chrome(options=chrome_options)
     login_to_viewpoint(driver)
+    time.sleep(5)
 
     properties_list = []
     for subdistrict_name, subdistrict_num in SUBDISTRICTS.items():

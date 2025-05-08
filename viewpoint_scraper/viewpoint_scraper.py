@@ -9,9 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import (
-    TimeoutException
-)
+from selenium.common.exceptions import TimeoutException
 
 logging.basicConfig(level=logging.INFO)
 
@@ -68,14 +66,16 @@ def to_snake_case(text: str) -> str:
     # Convert to lowercase and strip trailing underscores
     return text.strip("_").lower()
 
+
 def clean_json(json_str):
     # remove escape characters
     json_str = json_str.replace("\n", "").replace("\t", "")
     # remove trailing commas
-    json_str = re.sub(r',(\s*[\]}])', r'\1', json_str)
+    json_str = re.sub(r",(\s*[\]}])", r"\1", json_str)
     # replace empty values like "value": ,
     json_str = re.sub(r'"value":\s*,', '"value": null,', json_str)
     return json_str
+
 
 def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
     logging.info(f"{property_url=}")
@@ -84,13 +84,18 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
     wait = WebDriverWait(driver, 100)
 
     # JSON data
-    json_raw = driver.find_element(By.XPATH, '//script[@type="application/ld+json"]').get_attribute("innerHTML")
+    json_element = wait.until(
+        EC.presence_of_element_located(
+            (By.CSS_SELECTOR, 'script[type="application/ld+json"]')
+        )
+    )
+    json_raw = json_element.get_attribute("innerHTML")
     try:
         json_data = json.loads(clean_json(json_raw))
     except:
         print(json_raw)
         print(clean_json(json_raw))
-    
+
     # get listing history
     listing_section = wait.until(
         EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[data-section-id="6"]'))
@@ -98,8 +103,12 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
     listing_section.click()
     listing_history = []
     try:
-        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".table-history-item")))
-        listing_items = listing_section.find_elements(By.CSS_SELECTOR, ".table-history-item")
+        wait.until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".table-history-item"))
+        )
+        listing_items = listing_section.find_elements(
+            By.CSS_SELECTOR, ".table-history-item"
+        )
         for i, listing_item in enumerate(listing_items):
             listing_header = listing_item.find_element(
                 By.CLASS_NAME, "table-history-item-header"
@@ -120,7 +129,8 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
                 ]
             else:
                 header_values = [
-                    item.text for item in listing_header.find_elements(By.TAG_NAME, "span")
+                    item.text
+                    for item in listing_header.find_elements(By.TAG_NAME, "span")
                 ]
                 listing_dict = dict(zip(header_labels, header_values))
                 listing_dict["changes"] = [
@@ -133,7 +143,6 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
                 listing_history.append(listing_dict)
     except TimeoutException as e:
         logging.error("Timeout: failed to recover listing history. %s", str(e))
-
 
     # get details
     details_section = wait.until(
