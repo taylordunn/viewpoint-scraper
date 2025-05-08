@@ -7,14 +7,6 @@ from selenium.webdriver.chrome.options import Options
 
 from viewpoint_scraper import login_to_viewpoint, get_property_info
 
-SUBDISTRICTS = {
-    "Subdistrict A (Bedford)": 74,
-    "Subdistrict F (Bedford)": 73,
-    "Subdistrict H (Bedford)": 85,
-    "Subdistrict A (Kingswood, Haliburton Hills, Hammonds Plains)": 86,
-    "Subdistrict F (Fairmount, Clayton Park, Rockingham)": 23,
-}
-
 logging.basicConfig(level=logging.INFO)
 
 if __name__ == "__main__":
