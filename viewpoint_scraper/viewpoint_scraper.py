@@ -4,6 +4,7 @@ import bs4
 import requests
 import re
 import json
+from urllib.parse import urlparse
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -196,3 +197,65 @@ def login_to_viewpoint(driver: webdriver.Chrome) -> None:
 
         login_button = login_div.find_element(By.CLASS_NAME, "btn-positive")
         login_button.click()
+
+
+def get_property_photos(property_url: str, driver: webdriver.Chrome) -> dict:
+    logging.info(f"{property_url=}")
+    driver.get(BASE_URL + property_url)
+
+    wait = WebDriverWait(driver, 30)
+
+    # JSON data
+    json_element = wait.until(
+        EC.presence_of_element_located(
+            (By.CSS_SELECTOR, 'script[type="application/ld+json"]')
+        )
+    )
+    json_raw = json_element.get_attribute("innerHTML")
+    json_data = json.loads(clean_json(json_raw))
+    property_dir = os.path.join("photos", json_data["name"])
+    os.makedirs(property_dir, exist_ok=True)
+
+    photos_button = wait.until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, ".cutsheet-photo-main"))
+    )
+    photos_button.click()
+
+    img_index = 0
+
+    while True:
+        try:
+            img = wait.until(
+                EC.presence_of_element_located(
+                    (
+                        By.CSS_SELECTOR,
+                        f'img.lg-object.lg-image[data-index="{img_index}"]',
+                    )
+                )
+            )
+        except TimeoutException:
+            logging.info(f"No image found for index {img_index}. Ending loop.")
+            break
+
+        src = img.get_attribute("src")
+        logging.info(f"{src=}")
+        file_name = os.path.basename(urlparse(src).path)
+        file_path = os.path.join(property_dir, file_name)
+
+        if os.path.exists(file_path):
+            logging.info(f"File already exists at {file_path}. Skipping.")
+        else:
+            img_url = src + "?&sd=summary"
+            response = requests.get(img_url, stream=True)
+            logging.info(f"Downloading photo: {img_url}")
+            if response.status_code == 200:
+                with open(os.path.join(property_dir, file_name), "wb") as f:
+                    for chunk in response.iter_content(1024):
+                        f.write(chunk)
+
+        next_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.ID, "lg-next-1"))
+        )
+        next_button.click()
+
+        img_index += 1
