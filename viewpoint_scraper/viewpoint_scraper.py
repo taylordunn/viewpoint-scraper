@@ -101,7 +101,7 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
     listing_history = []
     try:
         wait.until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, ".table-history-item"))
+            EC.visibility_of_element_located((By.CSS_SELECTOR, ".table-history-item"))
         )
         listing_items = listing_section.find_elements(
             By.CSS_SELECTOR, ".table-history-item"
@@ -140,6 +140,7 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
                 listing_history.append(listing_dict)
     except TimeoutException as e:
         logging.error("Timeout: failed to recover listing history. %s", str(e))
+        driver.save_screenshot("screenshot.png")
 
     # get details
     details_section = wait.until(

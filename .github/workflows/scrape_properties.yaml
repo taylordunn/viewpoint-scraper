@@ -47,3 +47,9 @@ jobs:
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Upload screenshot if it exists
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-screenshot
+          path: screenshot.png
