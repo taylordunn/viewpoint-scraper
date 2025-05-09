@@ -21,9 +21,10 @@ if __name__ == "__main__":
         "/cutsheet/202426162/1/74-Samaa-Court-Bedford"
         "/cutsheet/202404909/1/105-Samaa-Court-Bedford",
         "/cutsheet/202505125/1/119-Samaa-Court-Bedford",
+        "/cutsheet/202408295/1/10-Weybridge-Lane-Bedford",
         "/cutsheet/202425045/1/34-Weybridge-Lane-Bedford",
-        "/cutsheet/202503654/1/33-Cairnstone-Lane-Bedford",
         "/cutsheet/202417337/1/41-Weybridge-Lane-Bedford",
+        "/cutsheet/202503654/1/33-Cairnstone-Lane-Bedford",
         "/cutsheet/202425319/1/66-Amesbury-Gate-Bedford",
         "/cutsheet/202501029/1/186-Amesbury-Gate-Bedford",
         "/cutsheet/202417594/1/92-Bristolton-Avenue-Bedford",
@@ -34,6 +35,7 @@ if __name__ == "__main__":
         "/cutsheet/202415568/1/244-Transom-Drive-Halifax",
         "/cutsheet/202406582/1/315-Transom-Drive-Halifax",
         "/cutsheet/202405919/1/116-Innsbrook-Way-Bedford",
+        "/cutsheet/202416652/1/404-Starboard-Drive-Halifax",
     ]    
 
     chrome_options = Options()
