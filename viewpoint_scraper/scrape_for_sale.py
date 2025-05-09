@@ -2,8 +2,12 @@ from datetime import datetime
 import logging
 import csv
 import time
+import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.core.os_manager import ChromeType
 
 from viewpoint_scraper import login_to_viewpoint, get_streets, get_properties, get_property_info
 
@@ -23,7 +27,20 @@ if __name__ == "__main__":
     chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-gpu")
-    driver = webdriver.Chrome(options=chrome_options)
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--ignore-certificate-errors")
+    
+    if os.getenv("GITHUB_ACTIONS") == "true":
+        logging.info("Running remotely")
+        # found this method here: https://github.com/jsoma/selenium-github-actions
+        driver_path = ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
+        driver = webdriver.Chrome(service=Service(driver_path), options=chrome_options)
+    else:
+        logging.info("Running locally")
+        driver = webdriver.Chrome(options=chrome_options)
+
+
     login_to_viewpoint(driver)
     time.sleep(5)
 
