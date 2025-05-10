@@ -100,9 +100,10 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
     listing_section.click()
     listing_history = []
     try:
-        wait.until(
+        target = wait.until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, ".table-history-item"))
         )
+        driver.execute_script("arguments[0].scrollIntoView(true);", target)
         listing_items = listing_section.find_elements(
             By.CSS_SELECTOR, ".table-history-item"
         )
