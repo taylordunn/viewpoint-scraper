@@ -82,7 +82,7 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
     logging.info(f"{property_url=}")
     driver.get(BASE_URL + property_url)
 
-    wait = WebDriverWait(driver, 100)
+    wait = WebDriverWait(driver, 5)
 
     # JSON data
     json_element = wait.until(
