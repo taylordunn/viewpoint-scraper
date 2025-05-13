@@ -91,8 +91,11 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
         )
     )
     json_raw = json_element.get_attribute("innerHTML")
-    json_data = json.loads(clean_json(json_raw))
-
+    try:
+        json_data = json.loads(clean_json(json_raw))
+    except:
+        logging.error("Unable to parse JSON: %s", clean_json(json_raw))
+        
     # get listing history
     listing_section = wait.until(
         EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[data-section-id="6"]'))
