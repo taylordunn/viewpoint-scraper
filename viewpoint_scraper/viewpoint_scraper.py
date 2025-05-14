@@ -4,6 +4,7 @@ import bs4
 import requests
 import re
 import json
+from json import JSONDecodeError
 from urllib.parse import urlparse
 from dotenv import load_dotenv
 from selenium import webdriver
@@ -68,23 +69,19 @@ def to_snake_case(text: str) -> str:
     return text.strip("_").lower()
 
 
-def clean_json(json_str):
+def clean_json(json_str) -> str:
     # remove escape characters
     json_str = json_str.replace("\n", "").replace("\t", "")
     # remove trailing commas
     json_str = re.sub(r",(\s*[\]}])", r"\1", json_str)
     # replace empty values like "value": ,
     json_str = re.sub(r'"value":\s*,', '"value": null,', json_str)
+    json_str = re.sub(r'"latitude":\s*,', '"latitude": null,', json_str)
+    json_str = re.sub(r'"longitude":\s*}', '"longitude": null}', json_str)
     return json_str
 
 
-def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
-    logging.info(f"{property_url=}")
-    driver.get(BASE_URL + property_url)
-
-    wait = WebDriverWait(driver, 5)
-
-    # JSON data
+def process_json(wait: WebDriverWait) -> dict:
     json_element = wait.until(
         EC.presence_of_element_located(
             (By.CSS_SELECTOR, 'script[type="application/ld+json"]')
@@ -93,8 +90,21 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
     json_raw = json_element.get_attribute("innerHTML")
     try:
         json_data = json.loads(clean_json(json_raw))
-    except:
-        logging.error("Unable to parse JSON: %s", clean_json(json_raw))
+    except JSONDecodeError as e:
+        logging.error("Unable to parse JSON: %s", str(e))
+        logging.error("Cleaned string: %s", clean_json(json_raw))
+        json_data = {}
+    
+    return json_data
+
+def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
+    logging.info(f"{property_url=}")
+    driver.get(BASE_URL + property_url)
+
+    wait = WebDriverWait(driver, 5)
+
+    # JSON data
+    json_data = process_json(wait)
         
     # get listing history
     listing_section = wait.until(
@@ -211,13 +221,8 @@ def get_property_photos(property_url: str, driver: webdriver.Chrome) -> dict:
     wait = WebDriverWait(driver, 30)
 
     # JSON data
-    json_element = wait.until(
-        EC.presence_of_element_located(
-            (By.CSS_SELECTOR, 'script[type="application/ld+json"]')
-        )
-    )
-    json_raw = json_element.get_attribute("innerHTML")
-    json_data = json.loads(clean_json(json_raw))
+    json_data = process_json(wait)
+
     property_dir = os.path.join("photos", json_data["name"])
     os.makedirs(property_dir, exist_ok=True)
 
