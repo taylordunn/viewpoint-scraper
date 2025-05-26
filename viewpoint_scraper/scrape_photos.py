@@ -26,6 +26,8 @@ if __name__ == "__main__":
         "/cutsheet/202510435/1/87-Innsbrook-Way-Bedford",
         "/cutsheet/202512042/1/1169-Fleetwood-Drive-Fall-River",
         "/cutsheet/202512069/1/196-Fleetview-Drive-Halifax",
+        "/cutsheet/202512242/1/262-Heddas-Way-Fall-River",
+        "/cutsheet/202512228/1/82-Shirley-Elliott-Court-Bedford",
     ]
 
     chrome_options = Options()
