@@ -30,7 +30,8 @@ if __name__ == "__main__":
         "/cutsheet/202512228/1/82-Shirley-Elliott-Court-Bedford",
         "/cutsheet/202513284/1/49-Crownridge-Drive-Bedford",
         "/cutsheet/202514528/1/43-Crownridge-Drive-Bedford",
-        "/cutsheet/202503675/1/1006-Mccabe-Lake-Drive-Middle-Sackville"
+        "/cutsheet/202503675/1/1006-Mccabe-Lake-Drive-Middle-Sackville",
+        "/cutsheet/202517777/1/68-Element-Court-Bedford"
     ]
 
     chrome_options = Options()
