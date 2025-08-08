@@ -32,7 +32,8 @@ if __name__ == "__main__":
         "/cutsheet/202514528/1/43-Crownridge-Drive-Bedford",
         "/cutsheet/202503675/1/1006-Mccabe-Lake-Drive-Middle-Sackville",
         "/cutsheet/202517777/1/68-Element-Court-Bedford",
-        "/cutsheet/202519219/1/372-Canoe-Crescent-Hammonds-Plains"
+        "/cutsheet/202519219/1/372-Canoe-Crescent-Hammonds-Plains",
+        "/cutsheet/202519973/1/220-Talus-Avenue-Bedford"
     ]
 
     chrome_options = Options()
