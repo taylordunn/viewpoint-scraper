@@ -190,10 +190,10 @@ def get_property_info(property_url: str, driver: webdriver.Chrome) -> dict:
 def login_to_viewpoint(driver: webdriver.Chrome) -> None:
     load_dotenv()
     driver.get(BASE_URL)
-    wait = WebDriverWait(driver, 5)
+    wait = WebDriverWait(driver, 500)
     login_button = wait.until(
-        EC.visibility_of_element_located(
-            (By.CSS_SELECTOR, 'a.nav-item.show-item[href="/user/login"]')
+        EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, 'a.nav-item[href="/user/login"]')
         )
     )
 
