@@ -10,7 +10,6 @@ logging.basicConfig(level=logging.INFO)
 if __name__ == "__main__":
     property_urls = [
         "/cutsheet/202422079/1/50-Glissade-Court-Bedford",
-        "/cutsheet/202421623/1/72-Element-Court-Bedford",
         "/cutsheet/202409631/1/21-Element-Court-Bedford",
         "/cutsheet/202417878/1/176-Talus-Avenue-Bedford",
         "/cutsheet/202426479/1/187-Talus-Avenue-Bedford",
@@ -43,9 +42,10 @@ if __name__ == "__main__":
         "/cutsheet/202605488/1/139-Terradore-Lane-Bedford",
         "/cutsheet/202606811/1/27-Cairnstone-Lane-Bedford",
         "/cutsheet/202514647/1/12-Glissade-Court-Bedford",
-        "/cutsheet/202609057/1/27-Weybridge-Lane-Bedford"
+        "/cutsheet/202609057/1/27-Weybridge-Lane-Bedford",
+        "/cutsheet/202609211/1/60-Cairnstone-Lane-Bedford"
     ]
-    property_urls = ["/cutsheet/202609211/1/60-Cairnstone-Lane-Bedford"]
+    property_urls = ["/cutsheet/202616389/1/72-Element-Court-Bedford"]
 
     chrome_options = Options()
     chrome_options.add_argument("--headless")
