@@ -47,9 +47,10 @@ if __name__ == "__main__":
         "/cutsheet/202616389/1/72-Element-Court-Bedford",
         "/cutsheet/202613909/1/51-Dungarry-Close-Fall-River",
         "/cutsheet/202616473/1/4-Crownridge-Drive-Bedford",
-        "/cutsheet/202620763/1/26-Glissade-Court-Bedford"
+        "/cutsheet/202620763/1/26-Glissade-Court-Bedford",
+        "/cutsheet/202621721/1/229-Talus-Avenue-Bedford"
     ]
-    property_urls = ["/cutsheet/202621721/1/229-Talus-Avenue-Bedford"]
+    property_urls = ["/cutsheet/202624718/1/460-Mccabe-Lake-Drive-Middle-Sackville"]
 
     chrome_options = Options()
     chrome_options.add_argument("--headless")
